@@ -80,7 +80,9 @@ const AdminDashboard = () => {
         pharmacyCity: '',
         pharmacyName: '',
         activityTimeframe: 'all',
-        activityCategory: 'all'
+        activityCategory: 'all',
+        activityStartDate: '',
+        activityEndDate: ''
     });
     const [pharmacyPage, setPharmacyPage] = useState(1);
     const [pharmacyTotalPages, setPharmacyTotalPages] = useState(1);
@@ -160,7 +162,9 @@ const AdminDashboard = () => {
             } else if (activeTab === 'system_activity' && user?.role === 'superadmin') {
                 const params = {
                     timeframe: searchQueries.activityTimeframe,
-                    category: searchQueries.activityCategory
+                    category: searchQueries.activityCategory,
+                    startDate: searchQueries.activityTimeframe === 'custom' ? searchQueries.activityStartDate : undefined,
+                    endDate: searchQueries.activityTimeframe === 'custom' ? searchQueries.activityEndDate : undefined
                 };
                 const res = await activityService.getActivities(params);
                 const statsRes = await activityService.getActivityStats();
@@ -462,7 +466,25 @@ const AdminDashboard = () => {
                                     <option value="daily">Daily</option>
                                     <option value="monthly">Monthly</option>
                                     <option value="yearly">Yearly</option>
+                                    <option value="custom">Custom Range</option>
                                 </select>
+                                {searchQueries.activityTimeframe === 'custom' && (
+                                    <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-gray-200 shadow-sm">
+                                        <input 
+                                            type="date"
+                                            value={searchQueries.activityStartDate}
+                                            onChange={(e) => setSearchQueries({ ...searchQueries, activityStartDate: e.target.value })}
+                                            className="px-2 py-1 text-xs border-none focus:ring-0 outline-none"
+                                        />
+                                        <span className="text-gray-400 text-xs font-bold">TO</span>
+                                        <input 
+                                            type="date"
+                                            value={searchQueries.activityEndDate}
+                                            onChange={(e) => setSearchQueries({ ...searchQueries, activityEndDate: e.target.value })}
+                                            className="px-2 py-1 text-xs border-none focus:ring-0 outline-none"
+                                        />
+                                    </div>
+                                )}
                                 <select 
                                     value={searchQueries.activityCategory}
                                     onChange={(e) => setSearchQueries({ ...searchQueries, activityCategory: e.target.value })}
